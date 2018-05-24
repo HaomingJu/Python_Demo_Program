@@ -16,8 +16,11 @@ class DemoShow(QtGui.QWidget):
         self.show_image_width = 1920
         self.show_image_height = 1080
         self.frame_rate = 1000 / 30
+        self.col_line_num = 6
+        self.row_line_num = 6
         self.setWindowTitle(u"gaze tracking")
         self.label_image = QtGui.QLabel()
+        self.label_image.setCursor(QtCore.Qt.CrossCursor)
         Layout_main = QtGui.QGridLayout(self)
         Layout_main.setSpacing(0)
         Layout_main.addWidget(self.label_image, 0, 0)
@@ -41,7 +44,7 @@ class DemoShow(QtGui.QWidget):
         ret, self.frame = self.device.read()
         self.frame = cv2.resize(self.frame, (self.show_image_width, self.show_image_height))
         tmp_frame = copy.deepcopy(self.frame)
-        self.GridLines(tmp_frame, 6, 6)
+        self.GridLines(tmp_frame,self.col_line_num, self.row_line_num)
         image= QtGui.QImage(tmp_frame, self.show_image_width, self.show_image_height, QtGui.QImage.Format_RGB888)
         self.label_image.setPixmap(QtGui.QPixmap.fromImage(image))
 
@@ -64,11 +67,14 @@ class DemoShow(QtGui.QWidget):
             os.remove(self.path + '\\' + os.listdir(self.path)[-1]) 
 
     def mousePressEvent(self,e):
-         if self.timer.isActive():
+        if self.timer.isActive():
             self.timer.stop()
             image_path = self.path + '/' + self.getTimeStr() + "_x_" + str(e.x()) + "_y_" + str(e.y()) + ".jpg"
             self.save_image(image_path)
             self.timer.start(self.frame_rate)
+
+    # def mouseMoveEvent(self, e):
+        # print "123132"
 
     def mkdir(self, path_):
         [scriptDir,scriptName]  = os.path.split(os.path.abspath(__file__))
@@ -87,9 +93,26 @@ class DemoShow(QtGui.QWidget):
         cv2.imwrite(path_name,self.frame)
 
 
+    # 事件过滤
+    def eventFilter(self, source, event):
+        if event.type() == QtCore.QEvent.MouseMove:
+             if event.buttons() == QtCore.Qt.NoButton:
+                 pos = event.pos()
+                 print "%d %d" % (pos.x(), pos.y())
+                 if pos.x() < 100 and pos.y() < 100:
+                     self.label_image.setToolTip(u"[彩蛋]: 狗算法,要求真多")
+                 else:
+                     self.label_image.setToolTip(u"")
+
+             else:
+                 pass
+        return QtGui.QMainWindow.eventFilter(self, source, event)
+
+
 if __name__ == "__main__":
     print "hello again."
     app = QtGui.QApplication(sys.argv)
     obj = DemoShow()
     obj.show()
+    app.installEventFilter(obj)
     app.exec_()
