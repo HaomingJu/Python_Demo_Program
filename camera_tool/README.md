@@ -2,6 +2,13 @@
 
 应用PyQt4模块, 编写可视化窗口工具用以辅助算法人员进行标注.<p>
 
+## 环境配置
+```
+sudo apt-get install libqt4-dev
+sudo apt-get install python-qt4
+```
+
+
 ## 思路说明
 1. 使用cv2模块`cap = cv2.VideoCapture(0)`打开PC摄像头, 并`ret, frame = cap.read()`读取数据.
 2. 使用Qt.Core.QTimer()进行不断触发`cap.read()`来更新显示, 以此达到更新界面的目的.
