@@ -6,6 +6,8 @@
 ```
 sudo apt-get install libqt4-dev
 sudo apt-get install python-qt4
+sudo pip install xlib
+sudo pip install PyAutoGUI
 ```
 
 
